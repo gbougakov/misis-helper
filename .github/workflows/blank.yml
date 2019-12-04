@@ -16,6 +16,5 @@ jobs:
     - name: Install global dependencies
       run: |
         yarn install
-        yarn global add vsce
     - name: Publish with VSCE
-      run: vsce publish -p ${{secrets.VSCE_TOKEN}}
+      run: npx vsce publish -p ${{secrets.VSCE_TOKEN}}
