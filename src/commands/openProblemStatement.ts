@@ -69,14 +69,69 @@ class OpenStatementCommand {
       "catCoding", // Identifies the type of the webview. Used internally
       problem.title, // Title of the panel displayed to the user
       vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
-      {} // Webview options. More on these later.
+      {
+        enableScripts: true
+      } // Webview options. More on these later.
+    );
+
+    panel.webview.onDidReceiveMessage(
+      message => {
+        switch (message.command) {
+          case "terminal":
+            if (!vscode.window.activeTerminal) {
+              vscode.window.showErrorMessage("Сначала, запусти свой код в терминале");
+              return;
+            }
+            
+            vscode.window.activeTerminal!.sendText(message.text, true);
+            return;
+        }
+      },
+      undefined,
+      this.context.subscriptions
     );
     
     panel.webview.html = `<style>
+    .tbinfo {
+      background: rgba(255, 255, 0, 0.2);
+    }
+    
     table, th, td {
       border: 1px solid black;
+      padding: 5px;
     }
-    </style>` + problem.htmlStatement;
+    </style>
+    <script>
+    window.onload = () => {
+      const vscode = acquireVsCodeApi()
+
+      const nodes = [].slice.call(document.querySelectorAll("td"))
+      
+      nodes.forEach(node => {
+        console.log(node)
+        node.onclick = e => {
+          console.log()
+          vscode.postMessage({
+            command: 'terminal',
+            text: e.target.innerHTML.replace('<br>', '\\n')
+          })
+        }
+      })
+      
+      const tables = [].slice.call(document.querySelectorAll("table"))
+      
+      tables.forEach(table => {
+        var para = document.createElement("td");
+        var node = document.createTextNode("Нажмите на ячейку, чтобы вставить ее содержимое в терминал");
+        para.appendChild(node);
+        
+        para.className = "tbinfo";
+        para.colSpan = 3;
+      
+        table.insertBefore(para, table.childNodes[0])
+      })
+    }
+    </script>` + problem.htmlStatement;
   }
 }
 
