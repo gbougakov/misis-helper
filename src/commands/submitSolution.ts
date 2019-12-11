@@ -139,7 +139,7 @@ class SubmitCommand {
     let lastAnswer = undefined;
     let count = 0;
     while(!lastAnswer || (lastAnswer as {verdict: {name: string}}).verdict === null) {
-      if (count > 100) {
+      if (count > 500) {
         vscode.window.showErrorMessage("Вашему решению не был вынесен вердикт. Скорее всего, упал МИСиС ACM");
         return;
       }
