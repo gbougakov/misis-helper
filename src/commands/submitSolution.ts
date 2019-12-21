@@ -64,6 +64,10 @@ class SubmitCommand {
       (o: { name: string }) => o.name === selectedContestName
     );
 
+    if (selectedContest.status === "WAITING" || selectedContest.status === "FINISHED") {
+      return vscode.window.showErrorMessage("Контест еще не начат, или уже завершен");
+    }
+
     const problems = await fetch(
       `https://contest.misis.ru/api/contest/${selectedContest.id}/problems`,
       {

@@ -45,6 +45,10 @@ class OpenStatementCommand {
     
     const selectedContest = contests.find((o: { name: string; }) => o.name === selectedContestName);
   
+    if (selectedContest.status === "WAITING") {
+      return vscode.window.showErrorMessage("Контест еще не начат");
+    }
+
     const problems = await fetch(`https://contest.misis.ru/api/contest/${selectedContest.id}/problems`, {
       headers: {
         Cookie:
